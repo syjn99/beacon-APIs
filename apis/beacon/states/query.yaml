@@ -1,0 +1,79 @@
+post:
+  operationId: "postStateQuery"
+  summary: "Query State with SSZ proof"
+  description: |
+    Handles single query on `BeaconState` with optional proof of inclusion. Returns SSZ serialized response.
+  tags:
+    - Beacon
+  parameters:
+    - name: state_id
+      in: path
+      required: true
+      $ref: '../../../beacon-node-oapi.yaml#/components/parameters/StateId'
+  requestBody:
+    description: "Query request specifying the merkle path and whether to include a proof"
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../beacon-node-oapi.yaml#/components/schemas/SSZQueryRequest'
+        examples:
+          simpleQuery:
+            summary: "Query genesis validators root without proof"
+            value:
+              query: ".genesis_validators_root"
+              include_proof: false
+          validatorQuery:
+            summary: "Query specific validator with proof"
+            value:
+              query: ".validators[100]"
+              include_proof: true
+          nestedQuery:
+            summary: "Query nested field"
+            value:
+              query: ".validators[100].activation_epoch"
+              include_proof: false
+  responses:
+    "200":
+      description: "Success - SSZ serialized query response"
+      headers:
+        Eth-Consensus-Version:
+          $ref: '../../../beacon-node-oapi.yaml#/components/headers/Eth-Consensus-Version'
+      content:
+        application/octet-stream:
+          schema:
+            $ref: '../../../beacon-node-oapi.yaml#/components/schemas/SSZQueryResponse'
+    "400":
+      description: "Invalid state ID or malformed query request"
+      content:
+        application/json:
+          schema:
+            $ref: "../../../beacon-node-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            InvalidStateId:
+              value:
+                code: 400
+                message: "Invalid state ID: current"
+            InvalidQuery:
+              value:
+                code: 400
+                message: "Malformed query path: invalid syntax"
+            InvalidSchema:
+              value:
+                code: 400
+                message: "Request body does not match required schema"
+    "404":
+      description: "State not found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../../beacon-node-oapi.yaml#/components/schemas/ErrorMessage"
+          example:
+            code: 404
+            message: "State not found"
+    "406":
+      $ref: "../../../beacon-node-oapi.yaml#/components/responses/NotAcceptable"
+    "500":
+      $ref: "../../../beacon-node-oapi.yaml#/components/responses/InternalError"
+    "503":
+      $ref: "../../../beacon-node-oapi.yaml#/components/responses/CurrentlySyncing"

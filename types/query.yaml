@@ -1,0 +1,39 @@
+SSZQueryRequest:
+  type: object
+  required: [query]
+  properties:
+    query:
+      type: string
+      description: "A merkle path to the item"
+    include_proof:
+      type: boolean
+      description: "Whether to include a merkle proof of inclusion."
+      default: false
+
+SSZQueryResponse:
+  description: |
+    SSZ serialized query response. The structure depends on the `include_proof` parameter.
+
+    **`SSZQueryResponse` (when `include_proof` is false):**
+    ```
+    class SSZQueryResponse(Container):
+        root: Bytes32                                    # The root value of the requested state/block
+        result: ByteList[SSZ_QUERY_MAX_RESULT_LENGTH]    # The requested query result
+    ```
+
+    **`SSZQueryResponseWithProof` (when `include_proof` is true):**
+    ```
+    class SSZQueryResponseWithProof(Container):
+        root: Bytes32                                    # The root value of the requested state/block
+        result: ByteList[SSZ_QUERY_MAX_RESULT_LENGTH]    # The requested query result
+        proof: SSZQueryProof                             # Merkle proof of inclusion
+
+    class SSZQueryProof(Container):
+        leaf: Bytes32                                    # Hash value corresponding to the queried path
+        gindex: uint64                                   # Generalized index for the queried path
+        proofs: List[Bytes32, SSZ_QUERY_MAX_TREE_DEPTH]  # Proof array sorted in descending order by gindex
+    ```
+
+    **Constants:**
+    - `SSZ_QUERY_MAX_TREE_DEPTH` = 64
+    - `SSZ_QUERY_MAX_RESULT_LENGTH` = 2^30 (1GB)
