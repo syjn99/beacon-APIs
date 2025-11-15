@@ -1,6 +1,6 @@
 post:
   operationId: "postStateQuery"
-  summary: "Query State with SSZ proof"
+  summary: "Query state with SSZ proof"
   description: |
     Handles single query on `BeaconState` with optional proof of inclusion. Returns SSZ serialized response.
   tags:
@@ -33,9 +33,14 @@ post:
             value:
               query: ".validators[100].activation_epoch"
               include_proof: false
+          lengthQuery:
+            summary: "Query number of pending deposits with proof"
+            value:
+              query: "len(.pending_deposits)"
+              include_proof: true
   responses:
     "200":
-      description: "Success - SSZ serialized query response"
+      description: "Success - SSZ-serialized query response"
       headers:
         Eth-Consensus-Version:
           $ref: '../../../beacon-node-oapi.yaml#/components/headers/Eth-Consensus-Version'

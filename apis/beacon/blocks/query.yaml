@@ -1,6 +1,6 @@
 post:
   operationId: "postBlockQuery"
-  summary: "Query Block with SSZ proof"
+  summary: "Query block with SSZ proof"
   description: |
     Handles single query on `BeaconBlock` with optional proof of inclusion. Returns SSZ serialized response.
   tags:
@@ -23,19 +23,24 @@ post:
             value:
               query: ".slot"
               include_proof: false
-          attestationQuery:
-            summary: "Query first attestation with proof"
-            value:
-              query: ".body.attestations[0]"
-              include_proof: true
           nestedQuery:
             summary: "Query RANDAO reveal"
             value:
               query: ".body.randao_reveal"
               include_proof: false
+          doublyNestedQuery:
+            summary: "Query BLS signature of the first attestation with proof"
+            value:
+              query: ".body.attestations[0].signature"
+              include_proof: true
+          lengthQuery:
+            summary: "Query number of attestations in the block"
+            value:
+              query: "len(.body.attestations)"
+              include_proof: true
   responses:
     "200":
-      description: "Success - SSZ serialized query response"
+      description: "Success - SSZ-serialized query response"
       headers:
         Eth-Consensus-Version:
           $ref: '../../../beacon-node-oapi.yaml#/components/headers/Eth-Consensus-Version'
@@ -75,5 +80,3 @@ post:
       $ref: "../../../beacon-node-oapi.yaml#/components/responses/NotAcceptable"
     "500":
       $ref: "../../../beacon-node-oapi.yaml#/components/responses/InternalError"
-    "503":
-      $ref: "../../../beacon-node-oapi.yaml#/components/responses/CurrentlySyncing"

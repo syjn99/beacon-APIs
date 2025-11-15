@@ -12,7 +12,7 @@ SSZQueryRequest:
 
 SSZQueryResponse:
   description: |
-    SSZ serialized query response. The structure depends on the `include_proof` parameter.
+    SSZ-serialized query response. The structure depends on the `include_proof` parameter.
 
     **`SSZQueryResponse` (when `include_proof` is false):**
     ```
