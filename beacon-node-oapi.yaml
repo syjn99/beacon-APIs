@@ -95,6 +95,8 @@ paths:
     $ref: "./apis/beacon/states/pending_partial_withdrawals.yaml"
   /eth/v1/beacon/states/{state_id}/proposer_lookahead:
     $ref: "./apis/beacon/states/proposer_lookahead.yaml"
+  /eth/v1/beacon/states/{state_id}/query:
+    $ref: "./apis/beacon/states/query.yaml"
 
   /eth/v1/beacon/headers:
     $ref: "./apis/beacon/blocks/headers.yaml"
@@ -108,6 +110,8 @@ paths:
     $ref: "./apis/beacon/blocks/block.v2.yaml"
   /eth/v1/beacon/blocks/{block_id}/root:
     $ref: "./apis/beacon/blocks/root.yaml"
+  /eth/v1/beacon/blocks/{block_id}/query:
+    $ref: "./apis/beacon/blocks/query.yaml"
   /eth/v2/beacon/blocks/{block_id}/attestations:
     $ref: "./apis/beacon/blocks/attestations.v2.yaml"
   /eth/v1/beacon/blob_sidecars/{block_id}:
@@ -441,6 +445,10 @@ components:
       $ref: './types/rewards.yaml#/BlockRewards'
     AttestationsRewards:
       $ref: './types/rewards.yaml#/AttestationsRewards'
+    SSZQueryRequest:
+      $ref: './types/query.yaml#/SSZQueryRequest'
+    SSZQueryResponse:
+      $ref: './types/query.yaml#/SSZQueryResponse'
 
   parameters:
     StateId:

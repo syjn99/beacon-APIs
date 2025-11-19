@@ -1,0 +1,82 @@
+post:
+  operationId: "postBlockQuery"
+  summary: "Query block with SSZ proof"
+  description: |
+    Handles single query on `BeaconBlock` with optional proof of inclusion. Returns SSZ serialized response.
+  tags:
+    - Beacon
+  parameters:
+    - name: block_id
+      in: path
+      required: true
+      $ref: '../../../beacon-node-oapi.yaml#/components/parameters/BlockId'
+  requestBody:
+    description: "Query request specifying the merkle path and whether to include a proof"
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../beacon-node-oapi.yaml#/components/schemas/SSZQueryRequest'
+        examples:
+          simpleQuery:
+            summary: "Query block slot without proof"
+            value:
+              query: ".slot"
+              include_proof: false
+          nestedQuery:
+            summary: "Query RANDAO reveal"
+            value:
+              query: ".body.randao_reveal"
+              include_proof: false
+          doublyNestedQuery:
+            summary: "Query BLS signature of the first attestation with proof"
+            value:
+              query: ".body.attestations[0].signature"
+              include_proof: true
+          lengthQuery:
+            summary: "Query number of attestations in the block"
+            value:
+              query: "len(.body.attestations)"
+              include_proof: true
+  responses:
+    "200":
+      description: "Success - SSZ-serialized query response"
+      headers:
+        Eth-Consensus-Version:
+          $ref: '../../../beacon-node-oapi.yaml#/components/headers/Eth-Consensus-Version'
+      content:
+        application/octet-stream:
+          schema:
+            $ref: '../../../beacon-node-oapi.yaml#/components/schemas/SSZQueryResponse'
+    "400":
+      description: "Invalid block ID or malformed query request"
+      content:
+        application/json:
+          schema:
+            $ref: "../../../beacon-node-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            InvalidBlockId:
+              value:
+                code: 400
+                message: "Invalid block ID: current"
+            InvalidQuery:
+              value:
+                code: 400
+                message: "Malformed query path: invalid syntax"
+            InvalidSchema:
+              value:
+                code: 400
+                message: "Request body does not match required schema"
+    "404":
+      description: "Block not found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../../beacon-node-oapi.yaml#/components/schemas/ErrorMessage"
+          example:
+            code: 404
+            message: "Block not found"
+    "406":
+      $ref: "../../../beacon-node-oapi.yaml#/components/responses/NotAcceptable"
+    "500":
+      $ref: "../../../beacon-node-oapi.yaml#/components/responses/InternalError"
